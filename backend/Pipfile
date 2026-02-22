@@ -12,6 +12,7 @@ psycopg = "*"
 python-dotenv = "*"
 pydantic-settings = "*"
 httpx = "*"
+pytz = "*"
 
 [dev-packages]
 pytest = "*"
