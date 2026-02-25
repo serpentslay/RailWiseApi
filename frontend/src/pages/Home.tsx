@@ -5,6 +5,10 @@ import { stations } from "../data/stations";
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, "") ?? "";
 
+function isJsonResponse(contentType: string | null): boolean {
+    return contentType?.toLowerCase().includes("application/json") ?? false;
+}
+
 export default function Home() {
     const today = useMemo(() => new Date().toISOString().split("T")[0], []);
     const [fromStation, setFromStation] = useState("");
@@ -31,10 +35,19 @@ export default function Home() {
         try {
             setIsLoading(true);
             const response = await fetch(endpoint, { method: "GET" });
+            const contentType = response.headers.get("content-type");
 
             if (!response.ok) {
                 const responseText = await response.text();
                 throw new Error(responseText || `Request failed with status ${response.status}`);
+            }
+
+            if (!isJsonResponse(contentType)) {
+                const responsePreview = (await response.text()).slice(0, 120);
+                throw new Error(
+                    `Expected JSON but received '${contentType ?? "unknown"}'. ` +
+                        `Check VITE_API_BASE_URL or the Vite /v1 proxy. Response started with: ${responsePreview}`,
+                );
             }
 
             const data: unknown = await response.json();
