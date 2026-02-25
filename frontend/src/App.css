@@ -5,6 +5,7 @@
 }
 
 .planner-page {
+  color: #111827;
   font-family: Arial, Helvetica, sans-serif;
   text-align: left;
 }
@@ -26,8 +27,10 @@
 
 .planner-form input,
 .planner-form select {
+  background: #fff;
   border: 1px solid #ccc;
   border-radius: 6px;
+  color: #111827;
   font-size: 1rem;
   padding: 0.6rem;
 }
@@ -59,6 +62,7 @@
 
 .empty-results {
   background: #f6f8fa;
+  border: 1px solid #d0d7de;
   border-radius: 8px;
   margin: 0;
   padding: 1rem;
@@ -74,6 +78,7 @@
   background: #f6f8fa;
   border: 1px solid #d0d7de;
   border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   padding: 1rem;
 }
 
@@ -83,4 +88,38 @@
 
 .result-card p {
   margin: 0.4rem 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .planner-page {
+    color: #e5e7eb;
+  }
+
+  .planner-form input,
+  .planner-form select {
+    background: #111827;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  .empty-results {
+    background: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+
+  .result-card {
+    background: linear-gradient(180deg, #111827 0%, #0b1220 100%);
+    border-color: #334155;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+    color: #e5e7eb;
+  }
+
+  .result-card h3 {
+    color: #bfdbfe;
+  }
+
+  .result-card strong {
+    color: #f9fafb;
+  }
 }
