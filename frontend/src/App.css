@@ -1,6 +1,6 @@
 #root {
   margin: 0 auto;
-  max-width: 760px;
+  max-width: 900px;
   padding: 2rem 1rem 3rem;
 }
 
@@ -57,9 +57,30 @@
   margin-top: 1.5rem;
 }
 
-.response-panel pre {
+.empty-results {
   background: #f6f8fa;
   border-radius: 8px;
-  overflow-x: auto;
+  margin: 0;
   padding: 1rem;
+}
+
+.results-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.result-card {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.result-card h3 {
+  margin: 0 0 0.8rem;
+}
+
+.result-card p {
+  margin: 0.4rem 0;
 }
