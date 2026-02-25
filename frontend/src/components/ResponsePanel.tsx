@@ -1,6 +1,5 @@
 type ReliabilityResult = {
     departure_time: string;
-    arrival_time?: string;
     operator: string | null;
     reliability_score: number;
     confidence_band: string;
@@ -8,7 +7,6 @@ type ReliabilityResult = {
 
 type ResponsePanelProps = {
     responseData: unknown;
-    requestedArriveBy: string;
 };
 
 function isReliabilityResult(value: unknown): value is ReliabilityResult {
@@ -19,7 +17,6 @@ function isReliabilityResult(value: unknown): value is ReliabilityResult {
     const candidate = value as Partial<ReliabilityResult>;
     return (
         typeof candidate.departure_time === "string" &&
-        (typeof candidate.arrival_time === "string" || candidate.arrival_time === undefined) &&
         (typeof candidate.operator === "string" || candidate.operator === null) &&
         typeof candidate.reliability_score === "number" &&
         typeof candidate.confidence_band === "string"
@@ -42,7 +39,7 @@ function formatDateTime(isoDateTime: string): string {
     });
 }
 
-export default function ResponsePanel({ responseData, requestedArriveBy }: ResponsePanelProps) {
+export default function ResponsePanel({ responseData }: ResponsePanelProps) {
     const results = Array.isArray(responseData) ? responseData.filter(isReliabilityResult) : [];
 
     if (results.length === 0) {
@@ -61,9 +58,6 @@ export default function ResponsePanel({ responseData, requestedArriveBy }: Respo
                 {results.map((train) => (
                     <article className="result-card" key={`${train.departure_time}-${train.operator ?? "unknown"}`}>
                         <h3>{formatDateTime(train.departure_time)}</h3>
-                        <p>
-                            <strong>Arrival time:</strong> {train.arrival_time ? formatDateTime(train.arrival_time) : requestedArriveBy}
-                        </p>
                         <p>
                             <strong>Operator:</strong> {train.operator ?? "Unknown"}
                         </p>

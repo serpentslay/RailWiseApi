@@ -79,7 +79,7 @@ export default function Home() {
             />
 
             {error ? <p className="error-message">Error: {error}</p> : null}
-            {responseData !== null ? <ResponsePanel responseData={responseData} requestedArriveBy={arriveByTime} /> : null}
+            {responseData !== null ? <ResponsePanel responseData={responseData} /> : null}
         </main>
     );
 }
