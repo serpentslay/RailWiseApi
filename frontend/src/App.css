@@ -24,7 +24,8 @@
   gap: 0.4rem;
 }
 
-.planner-form input {
+.planner-form input,
+.planner-form select {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
