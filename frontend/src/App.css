@@ -1,7 +1,8 @@
 #root {
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 1280px;
   padding: 2rem 1rem 3rem;
+  width: 100%;
 }
 
 .planner-page {
@@ -71,7 +72,8 @@
 .results-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  width: 100%;
 }
 
 .result-card {
@@ -88,6 +90,12 @@
 
 .result-card p {
   margin: 0.4rem 0;
+}
+
+@media (min-width: 1200px) {
+  .results-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
 }
 
 @media (prefers-color-scheme: dark) {
