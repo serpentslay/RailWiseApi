@@ -1,42 +1,64 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 760px;
+  padding: 2rem 1rem 3rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.planner-page {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.planner-page h1 {
+  margin-bottom: 1.5rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.planner-form {
+  display: grid;
+  gap: 1rem;
 }
 
-.card {
-  padding: 2em;
+.planner-form label {
+  display: grid;
+  font-weight: 600;
+  gap: 0.4rem;
 }
 
-.read-the-docs {
-  color: #888;
+.planner-form input {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  padding: 0.6rem;
+}
+
+.planner-form button {
+  background: #1f5fff;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+}
+
+.planner-form button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.error-message {
+  color: #b42318;
+  margin-top: 1rem;
+}
+
+.response-panel {
+  margin-top: 1.5rem;
+}
+
+.response-panel pre {
+  background: #f6f8fa;
+  border-radius: 8px;
+  overflow-x: auto;
+  padding: 1rem;
 }
