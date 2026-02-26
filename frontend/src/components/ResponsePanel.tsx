@@ -60,6 +60,14 @@ function getConfidenceClass(confidenceBand: string): string {
     return "confidence-pill confidence-low";
 }
 
+function getRecommendedTrains(results: ReliabilityResult[], currentTrain: ReliabilityResult): ReliabilityResult[] {
+    return results
+        .filter((train) => train.departure_time !== currentTrain.departure_time)
+        .slice()
+        .sort((a, b) => b.reliability_score - a.reliability_score)
+        .slice(0, 3);
+}
+
 export default function ResponsePanel({ responseData }: ResponsePanelProps) {
     const results = Array.isArray(responseData)
         ? responseData
@@ -81,35 +89,55 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
         <section className="response-panel">
             <h2>Train results</h2>
             <div className="results-grid">
-                {results.map((train, index) => (
-                    <article
-                        className={`result-card ${index === 0 ? "selected-card" : ""}`.trim()}
-                        key={`${train.departure_time}-${train.operator ?? "unknown"}`}
-                    >
-                        <div className="card-top-row">
-                            <h3>{formatDateTime(train.departure_time)}</h3>
-                            {index === 0 ? <span className="selected-pill">Selected</span> : null}
-                        </div>
+                {results.map((train, index) => {
+                    const recommendations = getRecommendedTrains(results, train);
 
-                        <p className="reliability-label">{getReliabilityLabel(train.reliability_score)}</p>
+                    return (
+                        <article
+                            className={`result-card ${index === 0 ? "selected-card selected-card-large" : ""}`.trim()}
+                            key={`${train.departure_time}-${train.operator ?? "unknown"}`}
+                        >
+                            <div className="card-top-row">
+                                <h3>{formatDateTime(train.departure_time)}</h3>
+                                {index === 0 ? <span className="selected-pill">Selected</span> : null}
+                            </div>
 
-                        <div className="score-row">
-                            <strong>Reliability score</strong>
-                            <span>{train.reliability_score}/100</span>
-                        </div>
-                        <div className="score-bar" role="presentation">
-                            <div className="score-fill" style={{ width: `${Math.max(0, Math.min(100, train.reliability_score))}%` }} />
-                        </div>
+                            <p className="reliability-label">{getReliabilityLabel(train.reliability_score)}</p>
 
-                        <p>
-                            <strong>Operator:</strong> {train.operator ?? "Unknown"}
-                        </p>
-                        <p>
-                            <strong>Confidence band:</strong>{" "}
-                            <span className={getConfidenceClass(train.confidence_band)}>{train.confidence_band}</span>
-                        </p>
-                    </article>
-                ))}
+                            <div className="score-row">
+                                <strong>Reliability score</strong>
+                                <span>{train.reliability_score}/100</span>
+                            </div>
+                            <div className="score-bar" role="presentation">
+                                <div className="score-fill" style={{ width: `${Math.max(0, Math.min(100, train.reliability_score))}%` }} />
+                            </div>
+
+                            <p>
+                                <strong>Operator:</strong> {train.operator ?? "Unknown"}
+                            </p>
+                            <p>
+                                <strong>Confidence band:</strong>{" "}
+                                <span className={getConfidenceClass(train.confidence_band)}>{train.confidence_band}</span>
+                            </p>
+
+                            <div className="recommendations-block">
+                                <p className="recommendations-title">Recommended alternatives</p>
+                                {recommendations.length > 0 ? (
+                                    <ul className="recommendations-list">
+                                        {recommendations.map((recommended) => (
+                                            <li key={`${recommended.departure_time}-${recommended.operator ?? "unknown"}-alt`}>
+                                                <span>{formatDateTime(recommended.departure_time)}</span>
+                                                <span>{recommended.reliability_score}/100</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="recommendations-empty">No alternative trains returned.</p>
+                                )}
+                            </div>
+                        </article>
+                    );
+                })}
             </div>
         </section>
     );

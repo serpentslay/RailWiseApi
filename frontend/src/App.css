@@ -177,9 +177,54 @@ body {
   margin: 0.35rem 0;
 }
 
+
+.selected-card-large {
+  transform: translateY(-2px);
+}
+
+.recommendations-block {
+  border-top: 1px solid #d0d7de;
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
+}
+
+.recommendations-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+}
+
+.recommendations-list {
+  display: grid;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recommendations-list li {
+  background: rgba(37, 99, 235, 0.08);
+  border-radius: 6px;
+  display: flex;
+  font-size: 0.85rem;
+  justify-content: space-between;
+  padding: 0.35rem 0.5rem;
+}
+
+.recommendations-empty {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
 @media (min-width: 1200px) {
   .results-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .selected-card-large {
+    grid-column: span 2;
   }
 }
 
@@ -244,6 +289,14 @@ body {
   .confidence-low {
     background: rgba(239, 68, 68, 0.2);
     color: #fca5a5;
+  }
+
+  .recommendations-block {
+    border-top-color: #334155;
+  }
+
+  .recommendations-list li {
+    background: rgba(96, 165, 250, 0.16);
   }
 
   .result-card strong {
