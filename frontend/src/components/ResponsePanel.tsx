@@ -39,8 +39,23 @@ function formatDateTime(isoDateTime: string): string {
     });
 }
 
+function getReliabilityLabel(score: number): string {
+    if (score >= 80) {
+        return "High reliability";
+    }
+    if (score >= 60) {
+        return "Moderate reliability";
+    }
+    return "Low reliability";
+}
+
 export default function ResponsePanel({ responseData }: ResponsePanelProps) {
-    const results = Array.isArray(responseData) ? responseData.filter(isReliabilityResult) : [];
+    const results = Array.isArray(responseData)
+        ? responseData
+              .filter(isReliabilityResult)
+              .slice()
+              .sort((a, b) => new Date(b.departure_time).getTime() - new Date(a.departure_time).getTime())
+        : [];
 
     if (results.length === 0) {
         return (
@@ -55,14 +70,28 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
         <section className="response-panel">
             <h2>Train results</h2>
             <div className="results-grid">
-                {results.map((train) => (
-                    <article className="result-card" key={`${train.departure_time}-${train.operator ?? "unknown"}`}>
-                        <h3>{formatDateTime(train.departure_time)}</h3>
+                {results.map((train, index) => (
+                    <article
+                        className={`result-card ${index === 0 ? "selected-card" : ""}`.trim()}
+                        key={`${train.departure_time}-${train.operator ?? "unknown"}`}
+                    >
+                        <div className="card-top-row">
+                            <h3>{formatDateTime(train.departure_time)}</h3>
+                            {index === 0 ? <span className="selected-pill">Selected</span> : null}
+                        </div>
+
+                        <p className="reliability-label">{getReliabilityLabel(train.reliability_score)}</p>
+
+                        <div className="score-row">
+                            <strong>Reliability score</strong>
+                            <span>{train.reliability_score}/100</span>
+                        </div>
+                        <div className="score-bar" role="presentation">
+                            <div className="score-fill" style={{ width: `${Math.max(0, Math.min(100, train.reliability_score))}%` }} />
+                        </div>
+
                         <p>
                             <strong>Operator:</strong> {train.operator ?? "Unknown"}
-                        </p>
-                        <p>
-                            <strong>Reliability score:</strong> {train.reliability_score}
                         </p>
                         <p>
                             <strong>Confidence band:</strong> {train.confidence_band}
