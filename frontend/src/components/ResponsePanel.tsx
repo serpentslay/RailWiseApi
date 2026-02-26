@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 type ReliabilityResult = {
     departure_time: string;
     operator: string | null;
@@ -60,21 +62,31 @@ function getConfidenceClass(confidenceBand: string): string {
     return "confidence-pill confidence-low";
 }
 
+function trainId(train: ReliabilityResult): string {
+    return `${train.departure_time}-${train.operator ?? "unknown"}`;
+}
+
 function getRecommendedTrains(results: ReliabilityResult[], currentTrain: ReliabilityResult): ReliabilityResult[] {
     return results
-        .filter((train) => train.departure_time !== currentTrain.departure_time)
+        .filter((train) => trainId(train) !== trainId(currentTrain))
         .slice()
         .sort((a, b) => b.reliability_score - a.reliability_score)
         .slice(0, 3);
 }
 
 export default function ResponsePanel({ responseData }: ResponsePanelProps) {
-    const results = Array.isArray(responseData)
-        ? responseData
-              .filter(isReliabilityResult)
-              .slice()
-              .sort((a, b) => new Date(b.departure_time).getTime() - new Date(a.departure_time).getTime())
-        : [];
+    const results = useMemo(
+        () =>
+            Array.isArray(responseData)
+                ? responseData
+                      .filter(isReliabilityResult)
+                      .slice()
+                      .sort((a, b) => new Date(b.departure_time).getTime() - new Date(a.departure_time).getTime())
+                : [],
+        [responseData],
+    );
+
+    const [selectedTrainId, setSelectedTrainId] = useState<string | null>(null);
 
     if (results.length === 0) {
         return (
@@ -85,21 +97,27 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
         );
     }
 
+    const resolvedSelectedTrainId =
+        selectedTrainId !== null && results.some((train) => trainId(train) === selectedTrainId)
+            ? selectedTrainId
+            : trainId(results[0]);
+
     return (
         <section className="response-panel">
             <h2>Train results</h2>
             <div className="results-grid">
-                {results.map((train, index) => {
-                    const recommendations = getRecommendedTrains(results, train);
+                {results.map((train) => {
+                    const isSelected = trainId(train) === resolvedSelectedTrainId;
+                    const recommendations = isSelected ? getRecommendedTrains(results, train) : [];
 
                     return (
                         <article
-                            className={`result-card ${index === 0 ? "selected-card selected-card-large" : ""}`.trim()}
-                            key={`${train.departure_time}-${train.operator ?? "unknown"}`}
+                            className={`result-card ${isSelected ? "selected-card selected-card-large" : ""}`.trim()}
+                            key={trainId(train)}
                         >
                             <div className="card-top-row">
                                 <h3>{formatDateTime(train.departure_time)}</h3>
-                                {index === 0 ? <span className="selected-pill">Selected</span> : null}
+                                {isSelected ? <span className="selected-pill">Selected</span> : null}
                             </div>
 
                             <p className="reliability-label">{getReliabilityLabel(train.reliability_score)}</p>
@@ -120,21 +138,30 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
                                 <span className={getConfidenceClass(train.confidence_band)}>{train.confidence_band}</span>
                             </p>
 
-                            <div className="recommendations-block">
-                                <p className="recommendations-title">Recommended alternatives</p>
-                                {recommendations.length > 0 ? (
-                                    <ul className="recommendations-list">
-                                        {recommendations.map((recommended) => (
-                                            <li key={`${recommended.departure_time}-${recommended.operator ?? "unknown"}-alt`}>
-                                                <span>{formatDateTime(recommended.departure_time)}</span>
-                                                <span>{recommended.reliability_score}/100</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="recommendations-empty">No alternative trains returned.</p>
-                                )}
-                            </div>
+                            {isSelected ? (
+                                <div className="recommendations-block">
+                                    <p className="recommendations-title">Recommended alternatives</p>
+                                    {recommendations.length > 0 ? (
+                                        <ul className="recommendations-list">
+                                            {recommendations.map((recommended) => (
+                                                <li key={`${trainId(recommended)}-alt`}>
+                                                    <span>{formatDateTime(recommended.departure_time)}</span>
+                                                    <span>{recommended.reliability_score}/100</span>
+                                                    <button
+                                                        className="switch-train-button"
+                                                        onClick={() => setSelectedTrainId(trainId(recommended))}
+                                                        type="button"
+                                                    >
+                                                        Switch
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="recommendations-empty">No alternative trains returned.</p>
+                                    )}
+                                </div>
+                            ) : null}
                         </article>
                     );
                 })}

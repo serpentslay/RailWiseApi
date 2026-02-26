@@ -218,6 +218,21 @@ body {
   opacity: 0.8;
 }
 
+.switch-train-button {
+  background: #1d4ed8;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+}
+
+.switch-train-button:hover {
+  background: #1e40af;
+}
+
 @media (min-width: 1200px) {
   .results-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -297,6 +312,15 @@ body {
 
   .recommendations-list li {
     background: rgba(96, 165, 250, 0.16);
+  }
+
+  .switch-train-button {
+    background: #3b82f6;
+    color: #0b1220;
+  }
+
+  .switch-train-button:hover {
+    background: #60a5fa;
   }
 
   .result-card strong {
