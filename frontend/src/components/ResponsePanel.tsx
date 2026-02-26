@@ -87,6 +87,7 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
     );
 
     const [selectedTrainId, setSelectedTrainId] = useState<string | null>(null);
+    const [expandedTrainId, setExpandedTrainId] = useState<string | null>(null);
 
     if (results.length === 0) {
         return (
@@ -107,13 +108,15 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
             <h2>Train results</h2>
             <div className="results-grid">
                 {results.map((train) => {
-                    const isSelected = trainId(train) === resolvedSelectedTrainId;
+                    const currentTrainId = trainId(train);
+                    const isSelected = currentTrainId === resolvedSelectedTrainId;
+                    const isExpanded = isSelected || expandedTrainId === currentTrainId;
                     const recommendations = isSelected ? getRecommendedTrains(results, train) : [];
 
                     return (
                         <article
-                            className={`result-card ${isSelected ? "selected-card selected-card-large" : ""}`.trim()}
-                            key={trainId(train)}
+                            className={`result-card ${isSelected ? "selected-card selected-card-large" : ""} ${isExpanded ? "mobile-expanded" : ""}`.trim()}
+                            key={currentTrainId}
                         >
                             <div className="card-top-row">
                                 <h3>{formatDateTime(train.departure_time)}</h3>
@@ -122,46 +125,60 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
 
                             <p className="reliability-label">{getReliabilityLabel(train.reliability_score)}</p>
 
-                            <div className="score-row">
-                                <strong>Reliability score</strong>
-                                <span>{train.reliability_score}/100</span>
-                            </div>
-                            <div className="score-bar" role="presentation">
-                                <div className="score-fill" style={{ width: `${Math.max(0, Math.min(100, train.reliability_score))}%` }} />
-                            </div>
+                            <button
+                                className="mobile-expand-button"
+                                onClick={() => setExpandedTrainId(isExpanded ? null : currentTrainId)}
+                                type="button"
+                            >
+                                {isExpanded ? "Hide details" : "Show details"}
+                            </button>
 
-                            <p>
-                                <strong>Operator:</strong> {train.operator ?? "Unknown"}
-                            </p>
-                            <p>
-                                <strong>Confidence band:</strong>{" "}
-                                <span className={getConfidenceClass(train.confidence_band)}>{train.confidence_band}</span>
-                            </p>
-
-                            {isSelected ? (
-                                <div className="recommendations-block">
-                                    <p className="recommendations-title">Recommended alternatives</p>
-                                    {recommendations.length > 0 ? (
-                                        <ul className="recommendations-list">
-                                            {recommendations.map((recommended) => (
-                                                <li key={`${trainId(recommended)}-alt`}>
-                                                    <span>{formatDateTime(recommended.departure_time)}</span>
-                                                    <span>{recommended.reliability_score}/100</span>
-                                                    <button
-                                                        className="switch-train-button"
-                                                        onClick={() => setSelectedTrainId(trainId(recommended))}
-                                                        type="button"
-                                                    >
-                                                        Switch
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="recommendations-empty">No alternative trains returned.</p>
-                                    )}
+                            <div className="card-details">
+                                <div className="score-row">
+                                    <strong>Reliability score</strong>
+                                    <span>{train.reliability_score}/100</span>
                                 </div>
-                            ) : null}
+                                <div className="score-bar" role="presentation">
+                                    <div className="score-fill" style={{ width: `${Math.max(0, Math.min(100, train.reliability_score))}%` }} />
+                                </div>
+
+                                <p>
+                                    <strong>Operator:</strong> {train.operator ?? "Unknown"}
+                                </p>
+                                <p>
+                                    <strong>Confidence band:</strong>{" "}
+                                    <span className={getConfidenceClass(train.confidence_band)}>{train.confidence_band}</span>
+                                </p>
+
+                                {isSelected ? (
+                                    <div className="recommendations-block">
+                                        <p className="recommendations-title">Recommended alternatives</p>
+                                        {recommendations.length > 0 ? (
+                                            <ul className="recommendations-list">
+                                                {recommendations.map((recommended) => (
+                                                    <li key={`${trainId(recommended)}-alt`}>
+                                                        <span>{formatDateTime(recommended.departure_time)}</span>
+                                                        <span>{recommended.reliability_score}/100</span>
+                                                        <button
+                                                            className="switch-train-button"
+                                                            onClick={() => {
+                                                                const nextTrainId = trainId(recommended);
+                                                                setSelectedTrainId(nextTrainId);
+                                                                setExpandedTrainId(nextTrainId);
+                                                            }}
+                                                            type="button"
+                                                        >
+                                                            Switch
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="recommendations-empty">No alternative trains returned.</p>
+                                        )}
+                                    </div>
+                                ) : null}
+                            </div>
                         </article>
                     );
                 })}

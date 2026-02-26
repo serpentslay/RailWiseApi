@@ -177,6 +177,10 @@ body {
   margin: 0.35rem 0;
 }
 
+.mobile-expand-button {
+  display: none;
+}
+
 
 .selected-card-large {
   transform: translateY(-2px);
@@ -231,6 +235,40 @@ body {
 
 .switch-train-button:hover {
   background: #1e40af;
+}
+
+
+@media (max-width: 768px) {
+  .result-card {
+    padding: 0.75rem;
+  }
+
+  .selected-card-large {
+    transform: none;
+  }
+
+  .mobile-expand-button {
+    background: transparent;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+    color: inherit;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+    padding: 0.2rem 0.45rem;
+  }
+
+  .card-details {
+    display: none;
+  }
+
+  .result-card.mobile-expanded .card-details,
+  .result-card.selected-card .card-details {
+    display: block;
+    margin-top: 0.5rem;
+  }
 }
 
 @media (min-width: 1200px) {
@@ -321,6 +359,11 @@ body {
 
   .switch-train-button:hover {
     background: #60a5fa;
+  }
+
+  .mobile-expand-button {
+    border-color: #334155;
+    color: #e5e7eb;
   }
 
   .result-card strong {
