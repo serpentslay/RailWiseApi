@@ -49,6 +49,17 @@ function getReliabilityLabel(score: number): string {
     return "Low reliability";
 }
 
+function getConfidenceClass(confidenceBand: string): string {
+    const normalized = confidenceBand.toLowerCase();
+    if (normalized === "high") {
+        return "confidence-pill confidence-high";
+    }
+    if (normalized === "medium") {
+        return "confidence-pill confidence-medium";
+    }
+    return "confidence-pill confidence-low";
+}
+
 export default function ResponsePanel({ responseData }: ResponsePanelProps) {
     const results = Array.isArray(responseData)
         ? responseData
@@ -94,7 +105,8 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
                             <strong>Operator:</strong> {train.operator ?? "Unknown"}
                         </p>
                         <p>
-                            <strong>Confidence band:</strong> {train.confidence_band}
+                            <strong>Confidence band:</strong>{" "}
+                            <span className={getConfidenceClass(train.confidence_band)}>{train.confidence_band}</span>
                         </p>
                     </article>
                 ))}
