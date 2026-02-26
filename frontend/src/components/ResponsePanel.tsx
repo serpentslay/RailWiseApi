@@ -51,6 +51,16 @@ function getReliabilityLabel(score: number): string {
     return "Low reliability";
 }
 
+function getReliabilityClass(score: number): string {
+    if (score >= 80) {
+        return "reliability-high";
+    }
+    if (score >= 60) {
+        return "reliability-medium";
+    }
+    return "reliability-low";
+}
+
 function getConfidenceClass(confidenceBand: string): string {
     const normalized = confidenceBand.toLowerCase();
     if (normalized === "high") {
@@ -112,11 +122,13 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
                     const isSelected = currentTrainId === resolvedSelectedTrainId;
                     const isExpanded = isSelected || expandedTrainId === currentTrainId;
                     const recommendations = isSelected ? getRecommendedTrains(results, train) : [];
+                    const reliabilityClass = getReliabilityClass(train.reliability_score);
 
                     return (
                         <article
                             className={`result-card ${isSelected ? "selected-card selected-card-large" : ""} ${isExpanded ? "mobile-expanded" : ""}`.trim()}
                             key={currentTrainId}
+                            onClick={() => setExpandedTrainId(isExpanded ? null : currentTrainId)}
                         >
                             <div className="card-top-row">
                                 <h3>{formatDateTime(train.departure_time)}</h3>
@@ -124,14 +136,10 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
                             </div>
 
                             <p className="reliability-label">{getReliabilityLabel(train.reliability_score)}</p>
-
-                            <button
-                                className="mobile-expand-button"
-                                onClick={() => setExpandedTrainId(isExpanded ? null : currentTrainId)}
-                                type="button"
-                            >
-                                {isExpanded ? "Hide details" : "Show details"}
-                            </button>
+                            <div className="small-reliability-row">
+                                <span className={`traffic-dot ${reliabilityClass}`} />
+                                <span className={`small-reliability-pill ${reliabilityClass}`}>{getReliabilityLabel(train.reliability_score)}</span>
+                            </div>
 
                             <div className="card-details">
                                 <div className="score-row">
@@ -161,7 +169,8 @@ export default function ResponsePanel({ responseData }: ResponsePanelProps) {
                                                         <span>{recommended.reliability_score}/100</span>
                                                         <button
                                                             className="switch-train-button"
-                                                            onClick={() => {
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
                                                                 const nextTrainId = trainId(recommended);
                                                                 setSelectedTrainId(nextTrainId);
                                                                 setExpandedTrainId(nextTrainId);
